@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  security_checks:
+    name: Security Checks
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install ruby and bundled gems
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+
+    - name: Install gems
+      run: gem install brakeman bundler-audit
+
+    - name: Run bundle-audit
+      run: bundle-audit check --update
+
+    - name: Run brakeman
+      run: brakeman --no-pager --github-repo maxfierke/resumis
+
+  rspec:
+    name: Rspec
+
+    runs-on: ubuntu-latest
+
+    needs: [security_checks]
+
+    env:
+      # I heard you like postgres, so we put some postgres, etc. etc.
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/resumis_test
+      RAILS_ENV: test
+
+    services:
+      postgres:
+        image: postgres:14
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install libpq-dev libvips42
+
+    - name: Install node and npm packages
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: '.node-version'
+
+    - name: Install ruby and bundled gems
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+
+    - name: Precompile assets
+      env:
+        SECRET_KEY_BASE: IGNORE_ME_I_AM_A_BAD_KEY_BASE
+      run: bin/rake assets:precompile
+
+    - name: Setup test database
+      run: bin/rails db:setup
+
+    - name: Run rspec
+      run: bin/rspec

@@ -1,0 +1,32 @@
+<section id="project_<%= project.id %>"
+         class="panel panel-default panel-project
+                <% if project.end_date %>
+                  current-project
+                <% else %>
+                  past-project
+                <% end %>">
+  <div class="panel-heading">
+    <h4 class="panel-title clearfix">
+      <span class="pull-left">
+        <%= project.name -%>
+        <% if project.status %>
+          <span class="project-status label label-default label-<%= project.status.slug %>">
+            <%= project.status.name %>
+          </span>
+        <% end %>
+      </span>
+      <span class="pull-right date-range">
+        <%= project.date_range %>
+      </span>
+    </h4>
+  </div>
+  <% if project.description.present? %>
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-xs-12">
+        <p><%= markdown(project.description) %></p>
+      </div>
+    </div>
+  </div>
+  <% end %>
+</section>

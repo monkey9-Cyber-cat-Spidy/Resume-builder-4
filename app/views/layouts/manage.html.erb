@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%= render :partial => 'shared/head' %>
+    <title><%= content_for?(:title) ? yield(:title) : "Resumis" %></title>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+    <%= stylesheet_link_tag 'resumis' %>
+  </head>
+  <body class="bg-gray-100 antialiased flex flex-col min-h-screen">
+    <%= render :partial => 'shared/navbar' %>
+
+    <div class="flex flex-wrap flex-1 overflow-hidden">
+      <aside class="w-full bg-gray-800 text-white hidden nav-menu-dropdown md:w-1/4 xl:w-1/6 md:flex md:flex-col">
+        <nav class="nav-tiles">
+          <%= active_link_to manage_dashboard_path, class: 'nav-link', active: :exclusive do %>
+            <%= icon 'fas', 'tachometer-alt fa-fw h-5 w-5 inline-block mr-4', 'Dashboard' %>
+          <% end %>
+          <%= active_link_to manage_posts_path, class: 'nav-link', active: :inclusive do -%>
+            <%= icon 'fas', 'paragraph fa-fw h-5 w-5 inline-block mr-4', 'Blog' %>
+          <%- end -%>
+          <%= active_link_to manage_projects_path, class: 'nav-link', active: :inclusive do %>
+            <%= icon 'fas', 'gem fa-fw h-5 w-5 inline-block mr-4', 'Projects' %>
+          <% end %>
+          <%= active_link_to manage_resumes_path, class: 'nav-link', active: :inclusive do %>
+            <%= icon 'far', 'file-alt fa-fw h-5 w-5 inline-block mr-4', 'CVs' %>
+          <% end %>
+          <div class="text-gray-500 text-sm uppercase px-6 py-2">
+            Experiences
+          </div>
+          <%= active_link_to manage_education_experiences_path, class: 'nav-link', active: :inclusive do %>
+            <%= icon 'fas', 'graduation-cap fa-fw h-5 w-5 inline-block mr-4', 'Education' %>
+          <% end %>
+          <%= active_link_to manage_skills_path, class: 'nav-link', active: /^\/manage\/skills?/ do %>
+            <%= icon 'fas', 'wrench fa-fw h-5 w-5 inline-block mr-4', 'Skills' %>
+          <% end %>
+          <%= active_link_to manage_work_experiences_path, class: 'nav-link', active: :inclusive do %>
+            <%= icon 'fas', 'suitcase fa-fw h-5 w-5 inline-block mr-4', 'Work' %>
+          <% end %>
+          <%- if current_user.admin? -%>
+            <div class="text-gray-500 text-sm uppercase px-6 py-2">
+              Administration
+            </div>
+            <%= active_link_to oauth_applications_url(host: resumis_canonical_host), class: 'nav-link', active: /^\/api\/oauth2/ do %>
+              <%= icon 'fas', 'exchange-alt fa-fw h-5 w-5 inline-block mr-4', 'API Apps' %>
+            <% end %>
+            <%= link_to sidekiq_web_url(host: resumis_canonical_host), class: 'nav-link', target: '_blank' do %>
+              <%= icon 'fas', 'external-link-alt fa-fw h-5 w-5 inline-block mr-4', 'Sidekiq UI' %>
+            <% end %>
+            <%- if ResumisConfig.multi_tenant? -%>
+              <%= active_link_to manage_users_path(host: resumis_canonical_host), class: 'nav-link', active: :inclusive do %>
+                <%= icon 'fas', 'users fa-fw h-5 w-5 inline-block mr-4', 'Users' %>
+              <% end %>
+            <%- end -%>
+          <%- end -%>
+        </nav>
+        <footer class="px-10 py-4 text-sm text-gray-500">
+          <p>
+            Powered by
+            <a href="https://github.com/maxfierke/resumis" class="underline">
+              Resumis
+            </a>
+          </p>
+        </footer>
+      </aside>
+
+      <div class="w-full md:w-3/4 xl:w-5/6 px-10 py-10 pb-20">
+        <div class="flex">
+          <div class="w-full">
+            <%= render_alerts %>
+            <%= yield %>
+          </div>
+        </div>
+
+        <div class="flex">
+          <% if content_for?(:actionbar_left) || content_for?(:actionbar_right) %>
+            <div class="actionbar actionbar-fixed-bottom">
+              <div class="actionbar-left">
+                <% if content_for?(:actionbar_left) %>
+                  <%= yield(:actionbar_left) %>
+                <% end %>
+              </div>
+              <div class="actionbar-right">
+                <% if content_for?(:actionbar_right) %>
+                  <%= yield(:actionbar_right) %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

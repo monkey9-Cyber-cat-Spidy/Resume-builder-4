@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "@rails/ujs": "^7.1.3",
+    "@tailwindcss/forms": "^0.5.2",
+    "autoprefixer": "^10.4.7",
+    "bootstrap": "^3.4.0",
+    "bootswatch": "^3.4.0",
+    "easymde": "^2.20.0",
+    "open-color": "^1.9.1",
+    "postcss": "^8.4.31",
+    "postcss-cli": "^9.1.0",
+    "postcss-import": "^14.1.0",
+    "postcss-preset-env": "^7.6.0",
+    "tailwindcss": "^3.0.24",
+    "vanilla-nested": "^1.7.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.5"
+  },
+  "engines": {
+    "node": ">= 16.*"
+  },
+  "scripts": {
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets --asset-names=[name]-[hash].digested --loader:.svg=file --loader:.eot=file --loader:.ttf=file --loader:.woff=file --loader:.woff2=file",
+    "build:css": "postcss ./app/assets/stylesheets/application.postcss.css -o ./app/assets/builds/resumis.css"
+  }
+}

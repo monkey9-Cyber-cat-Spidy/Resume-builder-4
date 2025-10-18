@@ -1,0 +1,59 @@
+<% page_title t('.title', name: @application.name) %>
+
+<div class="form-group">
+  <label class="control-label"><%= t('.application_id') %></label>
+  <code id="application_id"><%= @application.uid %></code>
+</div>
+
+<%- if @application.confidential? -%>
+  <div class="form-group">
+    <label class="control-label"><%= t('.secret') %></label>
+    <code id="secret"><%= flash[:application_secret].presence || @application.plaintext_secret %></code>
+  </div>
+<%- end -%>
+
+<div class="form-group">
+  <label class="control-label"><%= t('.scopes') %></label>
+  <code id="scopes"><%= @application.scopes.presence || raw('&nbsp;') %></code>
+</div>
+
+<div class="form-group">
+  <label class="control-label"><%= t('.confidential') %></label>
+
+  <%- if @application.confidential? -%>
+    <span class="text-red-700">
+      <%= icon 'fas', 'lock h-4 w-4 inline-block mr-1', 'Requires client secret' %>
+    </span>
+  <%- else -%>
+    <span class="text-green-700">
+      <%= icon 'fas', 'globe-americas h-4 w-4 inline-block mr-1', 'Public (does not require secret)' %>
+    </span>
+  <%- end -%>
+</div>
+
+<div class="form-group">
+  <label class="control-label"><%= t('.callback_urls') %></label>
+
+  <%- @application.redirect_uri.split.each do |uri| -%>
+    <div class="flex">
+      <div class="py-2">
+        <code><%= uri -%></code>
+      </div>
+      <div class="px-4 py-2">
+        <%= link_to t('doorkeeper.applications.buttons.authorize'),
+          oauth_authorization_path(client_id: @application.uid, redirect_uri: uri, response_type: 'code', scope: @application.scopes),
+          class: 'btn btn-link',
+          target: '_blank' -%>
+      </div>
+    </div>
+  <%- end -%>
+</div>
+
+<% content_for :actionbar_left do %>
+  <%= link_to "Back to applications", oauth_applications_path, class: 'btn btn-default' %>
+<% end %>
+
+<% content_for :actionbar_right do %>
+  <%= render 'delete_form', application: @application, submit_btn_css: 'btn btn-link link-danger' %>
+  <%= link_to t('doorkeeper.applications.buttons.edit'), edit_oauth_application_path(@application), class: 'btn btn-primary' %>
+<% end %>

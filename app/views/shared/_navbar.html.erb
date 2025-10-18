@@ -1,0 +1,53 @@
+<nav class="flex flex-initial items-center justify-between flex-wrap bg-gray-900 text-white px-10 py-4" role="navigation">
+  <div class="flex items-center flex-shrink-0 text-white mr-6">
+    <span class="font-semibold text-xl tracking-tight">
+      <%= link_to 'Resumis', manage_dashboard_path, class: 'hover:underline' -%>
+    </span>
+  </div>
+  <% if content_for?(:title) %>
+    <button type="button" class="appearance-none flex items-center text-center text-lg nav-menu nav-menu-dropdown-toggle md:pointer-events-none md:cursor-pointer">
+      <%= yield(:title) %>
+      <%= icon 'fas', 'angle-down fa-fw h-5 w-5 inline-block ml-2 md:hidden' %>
+    </button>
+  <% end %>
+
+  <%- if user_signed_in? -%>
+    <div class="user-menu">
+      <button class="appearance-none user-menu-dropdown-toggle flex items-center" type="button">
+        <span class="hidden md:inline">
+          <%= current_user.first_name %> <strong><%= current_user.last_name %></strong>
+        </span>
+        <div>
+          <%= image_tag current_user.avatar_url, class: 'h-10 rounded-full ml-4' %>
+        </div>
+      </button>
+      <nav class="user-menu-dropdown hidden" role="menu">
+        <% if current_user.homepage_url.present? %>
+          <%= link_to current_user.homepage_url, target: '_blank', class: 'nav-link' do %>
+            <%= icon 'fas', 'external-link-alt fa-fw h-5 w-5 inline-block mr-4', 'View Site' %>
+          <% end %>
+        <% end %>
+        <%= link_to manage_edit_profile_path, class: 'nav-link' do %>
+          <%= icon 'fas', 'pencil-alt fa-fw h-5 w-5 inline-block mr-4', 'Edit Profile' %>
+        <% end %>
+        <%= link_to edit_user_registration_path, class: 'nav-link' do %>
+          <%= icon 'fas', 'user-circle fa-fw h-5 w-5 inline-block mr-4', 'Account Settings' %>
+        <% end %>
+        <%= link_to destroy_user_session_url, method: 'DELETE', class: 'nav-link' do %>
+          <%= icon 'fas', 'sign-out-alt fa-fw h-5 w-5 inline-block mr-4', 'Logout' %>
+        <% end %>
+      </nav>
+    </div>
+  <% else %>
+    <div class="flex flex-initial items-center justify-end">
+      <%= link_to new_user_session_url, class: "btn btn-link" do %>
+        Login to Resumis
+      <% end %>
+      <% if Devise.mappings[:user].registerable? && ResumisConfig.multi_tenant? %>
+        <%= link_to new_user_registration_url, class: "btn btn-primary" do %>
+          Sign Up
+        <% end %>
+      <% end %>
+    </div>
+  <%- end -%>
+</nav>

@@ -1,0 +1,29 @@
+<section id="educationexp_<%= education_experience.id %>"
+         class="panel panel-default panel-education-experience
+                <% if education_experience.end_date %>
+                  current-education-experience
+                <% else %>
+                  past-education-experience
+                <% end %>"
+  >
+  <div class="panel-heading">
+    <h4 class="panel-title clearfix">
+      <span class="pull-left">
+        <%= education_experience.diploma %><br />
+        <small><%= education_experience.school_name %></small>
+      </span>
+      <span class="pull-right date-range">
+        <%= education_experience.date_range %>
+      </span>
+    </h4>
+  </div>
+  <% if education_experience.description.length > 0 %>
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-xs-12">
+        <p><%= markdown(education_experience.description) %></p>
+      </div>
+    </div>
+  </div>
+  <% end %>
+</section>

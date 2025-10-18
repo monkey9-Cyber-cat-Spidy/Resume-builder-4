@@ -1,0 +1,149 @@
+<%= form_for @user, url: manage_profile_path, html: { multipart: true } do |f| %>
+<% if @user.errors.any? %>
+  <div class="alert alert-danger" role="alert">
+    <strong class="font-bold">
+      <%= pluralize(@user.errors.count, "error") %>
+      prohibited this user from being saved:
+    </strong>
+
+    <ul class="list-disc list-inside">
+    <%- @user.errors.full_messages.each do |message| -%>
+      <li><%= message %></li>
+    <%- end -%>
+    </ul>
+  </div>
+<% end %>
+
+<div class="flex flex-col lg:flex-row border-b border-gray-300 mb-4">
+  <div class="w-full lg:w-1/5 pb-2">
+    <h1 class="text-xl text-gray-700">Bio</h1>
+  </div>
+
+  <div class="lg:flex-1">
+    <div class="form-group">
+      <%= f.label :first_name, class: 'control-label' %>
+      <%= f.text_field :first_name, class: 'text_field form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :last_name, class: 'control-label' %>
+      <%= f.text_field :last_name, class: 'text_field form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :tagline, class: 'control-label' %>
+      <%= f.text_field :tagline, class: 'text_field form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :about_me, class: 'control-label' %>
+      <%= f.text_area :about_me, class: 'text_field form-control', rows: '12', :"data-provide" => "markdown", :'data-iconlibrary' => 'fa' %>
+    </div>
+  </div>
+</div>
+
+<div class="flex flex-col lg:flex-row border-b border-gray-300 pt-4 mb-4">
+  <div class="w-full lg:w-1/5 pb-2">
+    <h1 class="text-xl text-gray-700">Header Image</h1>
+  </div>
+
+  <div class="lg:flex-1">
+    <div class="form-group">
+      <%= f.label :header_image, class: 'control-label' %>
+      <% if @user.header_image.attached? && @user.header_image_url %>
+        <div class="w-full rounded mb-4">
+          <%= image_tag @user.header_image_url %>
+        </div>
+      <% else %>
+        <div class="w-full rounded mb-4">
+          No header image attached
+        </div>
+      <% end %>
+      <%= f.file_field :header_image %>
+    </div>
+  </div>
+</div>
+
+
+<div class="flex flex-col lg:flex-row border-b border-gray-300 pt-4 mb-4">
+  <div class="w-full lg:w-1/5 pb-2">
+    <h1 class="text-xl text-gray-700">Profile Photo</h1>
+  </div>
+
+  <div class="w-full lg:w-2/5 pb-2 lg:pr-2">
+    <% if @user.avatar_image.attached? %>
+      <%= image_tag @user.avatar_url, alt: "Avatar", class: "rounded" %>
+    <% else %>
+      <div class="rounded">
+        No avatar image attached
+      </div>
+    <% end %>
+  </div>
+
+  <div class="lg:flex-1 lg:pl-2">
+    <div class="form-group">
+      <%= f.label :avatar_image, class: 'control-label' %>
+      <%= f.file_field :avatar_image %>
+    </div>
+    <div class="form-group">
+      <%= f.label :avatar_label, class: 'control-label' %>
+      <%= f.text_field :avatar_label, class: 'text_field form-control' %>
+    </div>
+  </div>
+</div>
+
+<div class="flex flex-col lg:flex-row border-b border-gray-300 pt-4 mb-4">
+  <div class="w-full lg:w-1/5 pb-2">
+    <h1 class="text-xl text-gray-700">Public URLs</h1>
+  </div>
+
+  <div class="lg:flex-1">
+    <div class="form-group">
+      <%= f.label :homepage_url, class: 'control-label' %>
+      <%= f.text_field :homepage_url, class: 'form-control' %>
+      <p class="help-block">
+        Set this to the root URL (no trailing slash) of your website
+      </p>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :blog_url, class: 'control-label' %>
+      <%= f.text_field :blog_url, class: 'form-control' %>
+      <p class="help-block">
+        <strong>If you're using the blog/posts API,</strong>
+        set this to the root URL of your blog (no trailing slash).<br />
+        This is mostly used for URLs in the generated blog RSS feed.
+        It's assumed the path immediately after will receive the blog post
+        slug.<br /><br />
+
+        e.g. Set this to <code>https://your.website/blog/posts</code> if your posts
+        are live at <code>https://your.website/blog/posts/my-trip-to-new-york</code>
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="flex flex-col lg:flex-row border-b border-gray-300 pt-4 mb-4">
+  <div class="w-full lg:w-1/5 pb-2">
+    <h1 class="text-xl text-gray-700">Social Networks</h1>
+  </div>
+
+  <div class="form-horizontal lg:flex-1">
+    <div id="social-links">
+      <%= f.fields_for :social_links do |social_link| %>
+        <%= render 'social_link_fields', form: social_link %>
+      <% end %>
+    </div>
+
+    <div class="flex pb-4">
+      <%= link_to_add_nested(f, :social_links, '#social-links', link_text: 'Add social network', link_classes: 'btn btn-link cursor-pointer') %>
+    </div>
+  </div>
+</div>
+
+<div class="actionbar actionbar-fixed-bottom">
+  <div class="actionbar-left">
+    <%= link_to t('.cancel', default: t("helpers.links.cancel")), manage_dashboard_path, class: 'btn btn-default' %>
+  </div>
+  <div class="actionbar-right">
+    <%= f.submit "Save Changes", class: 'btn btn-primary' %>
+  </div>
+</div>
+<% end %>

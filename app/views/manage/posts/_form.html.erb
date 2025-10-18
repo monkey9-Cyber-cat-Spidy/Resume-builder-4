@@ -1,0 +1,88 @@
+<%= form_for([:manage, @post], html: { :"data-post-id" => @post.id }) do |f| %>
+  <% if @post.errors.any? %>
+    <div class="alert alert-danger" role="alert">
+      <strong class="font-bold">
+        <%= pluralize(@post.errors.count, "error") %>
+        prohibited this post from being saved:
+      </strong>
+
+      <ul class="list-disc list-inside">
+      <%- @post.errors.full_messages.each do |message| -%>
+        <li><%= message %></li>
+      <%- end -%>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="flex flex-col lg:flex-row">
+    <div class="w-full lg:w-3/4 lg:mr-3">
+      <div class="form-group">
+        <%= f.label :title, class: 'control-label' %>
+        <%= f.text_field :title, class: 'text_field form-control', placeholder: 'e.g. My favorite hip-hop albums of 2014' %>
+      </div>
+      <div class="form-group">
+        <%= f.label :body, class: 'control-label' %>
+        <%= f.text_area :body, class: 'text_field form-control', :rows => '6', :"data-provide" => "markdown", :'data-iconlibrary' => 'fa' %>
+      </div>
+    </div>
+
+    <div class="w-full lg:w-4/12 lg:pl-3">
+      <div class="w-full rounded bg-white overflow-hidden shadow-lg px-6 py-4 mb-6">
+        <h3 class="font-medium mb-4 text-gray-700">Post Options</h3>
+
+        <% unless @post.new_record? %>
+          <div class="form-group">
+            <%= f.label :created_at, 'Created', class: 'control-label' %>
+            <p class="form-control-static"><%= time_ago_in_words(@post.created_at) %> ago</p>
+          </div>
+          <div class="form-group">
+            <%= f.label :updated_at, 'Updated', class: 'control-label' %>
+            <p class="form-control-static"><%= time_ago_in_words(@post.updated_at) %> ago</p>
+          </div>
+        <% end %>
+
+          <div class="form-group">
+            <%= f.label :published_on, class: 'control-label' %>
+            <div class="flex justify-between">
+              <%= f.date_select :published_on, { start_year: 2005, end_year: Date.today.year }, class: 'form-control' %>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="checkbox">
+              <label>
+                <%= f.check_box :published, class: 'form-checkbox' %> Published
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="w-full rounded bg-white overflow-hidden shadow-lg px-6 py-4 mb-6">
+          <h3 class="font-medium mb-4 text-gray-700">Post Categories</h3>
+
+          <%= f.collection_check_boxes(:post_category_ids,  PostCategory.order("name ASC"), :id, :name,
+            { :selected => @post.post_category_ids }, { :multiple => true } ) do |b| %>
+            <div class="checkbox">
+              <%= b.label do  %>
+                <%= b.check_box(class: 'form-checkbox') %> <%= b.text %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actionbar actionbar-fixed-bottom">
+    <div class="actionbar-left">
+      <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                    manage_posts_path, class: 'btn btn-default' %>
+    </div>
+    <div class="actionbar-right">
+      <% unless @post.new_record? %>
+        <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+                    manage_post_path(@post), :method => 'DELETE', data: { confirm: 'Are you sure?' }, class: 'btn btn-link link-danger' %>
+      <% end %>
+      <%= f.submit nil, class: 'btn btn-primary' %>
+    </div>
+  </div>
+<% end %>
