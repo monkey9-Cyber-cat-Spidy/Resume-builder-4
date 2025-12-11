@@ -1,4 +1,4 @@
-# Resumis
+# Resumes
 
 Resumis is _Esperanto_ for "summarized". It's also an API and headless CMS for your
 personal web presence, a CV generator, and JSON Resume provider.
